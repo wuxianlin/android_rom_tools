@@ -1,0 +1,11 @@
+jadx.zip
+tools/apktool*.jar
+tools/baksmali*.jar
+tools/oat2dex*.jar
+tools/smali*.jar
+oatdumpdexloc/oatdumpdexloc
+jadx/
+out/
+sdat2img/
+vdexExtractor/
+
