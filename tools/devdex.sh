@@ -97,8 +97,15 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 			dex=classes.dex
 			jarfolder="$(dirname $jar)"
 			mkdir -p $OUT/$jarfolder
-			cp $ROM/$jar $OUT/$jarfolder
-			if unzip -v $ROM/$jar | grep " classes.dex" >/dev/null; then
+			if [ -f $ROM/$jar ]; then
+				cp $ROM/$jar $OUT/$jarfolder
+			elif [ -f $ROM/system/$jar ]; then
+				cp $ROM/system/$jar $OUT/$jarfolder
+			else
+				echo "---- $jar not found ----"
+				break
+			fi
+			if unzip -v $OUT/$jar | grep " classes.dex" >/dev/null; then
 				echo "---- $jar is already devdexed ----"
 				break
 			fi
