@@ -29,7 +29,16 @@ rm -rf $OUT/*
 
 unzip -q -o $1 -d $OUT/rom
 rm $1
-tools/dedat.sh $OUT/rom
+if [ -f $OUT/rom/payload.bin ];then
+    python extract_android_ota_payload/extract_android_ota_payload.py $OUT/rom/payload.bin $OUT/rom
+    rm $OUT/rom/payload.bin
+    tools/deimg.sh $OUT/rom
+else
+    tools/dedat.sh $OUT/rom
+fi
+if [ -d $OUT/rom/vendor/euclid ];then
+    tools/deimg.sh $OUT/rom/vendor/euclid
+fi
 
 if [ -d $OUT/rom/system/system ];then
 	mv $OUT/rom/system $OUT/rom/system_root

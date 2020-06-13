@@ -25,7 +25,7 @@ then
     exit 1
 fi
 
-for list in `find -name *.transfer.list`;do
+for list in `find $ROM -name *.transfer.list`;do
 	path=$(dirname $list)
 	listname=$(basename $list)
 	partname=${listname%%.*}
@@ -35,7 +35,7 @@ for list in `find -name *.transfer.list`;do
 	[ ! -e $path/$partname.img ] && continue
 	name=`whoami`
 	outdir=`mktemp -d /tmp/dedat.mount.XXXXX`
-	sudo mount -t ext4 -o loop $path/$partname.img $outdir
+	sudo mount -o ro,loop $path/$partname.img $outdir
 	sudo cp -r $outdir $path/$partname
 	sudo chown -R $name:$name $path/$partname
 	sudo umount $outdir

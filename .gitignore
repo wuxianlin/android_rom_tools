@@ -6,6 +6,7 @@ tools/smali*.jar
 oatdumpdexloc/oatdumpdexloc
 jadx/
 out/
+extract_android_ota_payload/
 sdat2img/
 vdexExtractor/
 

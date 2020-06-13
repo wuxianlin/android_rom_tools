@@ -42,6 +42,8 @@ make -C oatdumpdexloc
 
 git clone https://github.com/xpirt/sdat2img
 
+git clone https://github.com/cyxx/extract_android_ota_payload
+
 mkdir tools
 
 if [ $GITHUB_TOKEN ];then
