@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+MYDIR=`dirname $0`
+
 ROM=$1
 OUT=$2
 
@@ -28,7 +30,7 @@ then
 	OUT=./out
 fi
 
-OAT2DEX=tools/oat2dex.jar
+OAT2DEX=$MYDIR/oat2dex.jar
 if [ ! -r "$OAT2DEX" ]
 then
     echo "can't find $OAT2DEX"

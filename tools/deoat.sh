@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+MYDIR=`dirname $0`
 
 ROM=$1
 OUT=$2
@@ -32,8 +33,8 @@ fi
 mkdir $OUT
 rm -rf $OUT/*
 
-smali=$(find tools -name *smali* -not -name *baksmali*)
-baksmali=$(find tools -name *baksmali*)
+smali=$(find $MYDIR -name *smali* -not -name *baksmali*)
+baksmali=$(find $MYDIR -name *baksmali*)
 if [ "$smali" = "" ] || [ "$baksmali" = "" ]; then
      echo "baksmali or smali not found"
      exit 1

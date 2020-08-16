@@ -15,11 +15,13 @@
 # limitations under the License.
 #
 
+MYDIR=`dirname $0`
+
 ROM=$1
 OUT=$2
-VDEX_EXTRACTOR_BIN=vdexExtractor/bin/vdexExtractor
-cdexConvBin=vdexExtractor/bin/api-28/bin/compact_dex_converter
-maxapilevel=`cat vdexExtractor/bin/max_api_level`
+VDEX_EXTRACTOR_BIN=$MYDIR/../vdexExtractor/bin/vdexExtractor
+cdexConvBin=$MYDIR/../vdexExtractor/bin/api-28/bin/compact_dex_converter
+maxapilevel=`cat $MYDIR/../vdexExtractor/bin/max_api_level`
 
 if [ ! $maxapilevel ];then
 	maxapilevel=28
@@ -53,10 +55,10 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 	fi
 	if [ -f $oat ]; then
 		#echo $oat
-		dexlist="$(oatdumpdexloc/oatdumpdexloc -i $oat)"
+		dexlist="$($MYDIR/../oatdumpdexloc/oatdumpdexloc -i $oat)"
 	elif [ -f $odex ]; then
 		#echo $odex
-		dexlist="$(oatdumpdexloc/oatdumpdexloc -i $odex)"
+		dexlist="$($MYDIR/../oatdumpdexloc/oatdumpdexloc -i $odex)"
 	else
 		for oat in `find $vdexfolder -name ${vdexname/vdex/oat} -o -name ${vdexname/vdex/odex}`;do
 			oatfolder="$(dirname $oat)"
@@ -65,20 +67,20 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 				echo "---- $oatfolder"64/"$oatname exists ----"
 				continue
 			fi
-			dexlist="$(oatdumpdexloc/oatdumpdexloc -i $oat)"
+			dexlist="$($MYDIR/../oatdumpdexloc/oatdumpdexloc -i $oat)"
 		done
-		if [ ! $dexlist ];then
+		if [ ! "$dexlist" ];then
 			echo "error while devdexing $vdex"
 			continue
 		fi
 	fi
 	apiLevel=$($VDEX_EXTRACTOR_BIN --get-api -i "$vdex" || echo "API-0")
 	apiLevel=${apiLevel//API-/}
-	cdexConvBinTmp=vdexExtractor/bin/api-$apiLevel/bin/compact_dex_converter
+	cdexConvBinTmp=$MYDIR/../vdexExtractor/bin/api-$apiLevel/bin/compact_dex_converter
 	if [ -f $cdexConvBinTmp ];then
 		cdexConvBin=$cdexConvBinTmp
         elif [ $apiLevel -gt $maxapilevel ];then
-		cdexConvBin=vdexExtractor/bin/api-$maxapilevel/bin/compact_dex_converter
+		cdexConvBin=$MYDIR/../vdexExtractor/bin/api-$maxapilevel/bin/compact_dex_converter
 	fi
 	#echo $cdexConvBin
 	for dex in $dexlist; do
@@ -97,10 +99,27 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 			dex=classes.dex
 			jarfolder="$(dirname $jar)"
 			mkdir -p $OUT/$jarfolder
-			if [ -f $ROM/$jar ]; then
+			jarname=${jar#*/}
+			jarname=${jarname#*/}
+			jarname2=${jarname#*/}
+			vdexpath=${vdex#$ROM*}
+			vdexpath=${vdexpath#*/}
+			vdexpath=${vdexpath%%/*}
+			if [ -f $ROM/$vdexpath/$jarname ]; then
+				jar=/$vdexpath/$jarname
+				jarfolder="$(dirname $jar)"
+				mkdir -p $OUT/$jarfolder
+				cp $ROM/$vdexpath/$jarname $OUT/$jarfolder
+			elif [ -f $ROM/$vdexpath/$jarname2 ]; then
+				jar=/$vdexpath/$jarname2
+				jarfolder="$(dirname $jar)"
+				mkdir -p $OUT/$jarfolder
+				cp $ROM/$vdexpath/$jarname2 $OUT/$jarfolder
+			elif [ -f $ROM/$jar ]; then
 				cp $ROM/$jar $OUT/$jarfolder
 			elif [ -f $ROM/system/$jar ]; then
 				cp $ROM/system/$jar $OUT/$jarfolder
+			el
 			else
 				echo "---- $jar not found ----"
 				break
@@ -136,6 +155,7 @@ for apk in `find $ROM -name *.apk -o -name *.jar`; do
 	if [ ! -f $OUT/$folder/$apkname -a  ! -f $OUT/$foldermaybe/$apkname ];then
 		mkdir -p $OUT/$folder
 		cp $apk $OUT/$folder
+		echo copied $OUT/$folder/$apkname
 	fi
 done
 

@@ -1,8 +1,10 @@
 #!/bin/bash
 
+MYDIR=`dirname $0`
+
 ROM=$1
 OUT=$2
-JADX_BIN=jadx/bin/jadx
+JADX_BIN=$MYDIR/../jadx/bin/jadx
 
 
 if [ -z "$ROM" ]

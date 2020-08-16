@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+PWD=`pwd`
+
+MYDIR=`dirname $0`
+cd $MYDIR
+
 GITHUB_TOKEN=$1
 
 git clone https://github.com/anestisb/vdexExtractor
@@ -78,4 +83,6 @@ curl --silent --show-error --location --fail --retry 3 --output tools/$APKTOOL_N
 OAT2DEX_ASSET_URL="https://github.com/testwhat/SmaliEx/releases/download/snapshot/oat2dex.jar"
 echo $OAT2DEX_ASSET_URL
 curl --silent --show-error --location --fail --retry 3 --output tools/oat2dex.jar $OAT2DEX_ASSET_URL
+
+cd $PWD
 

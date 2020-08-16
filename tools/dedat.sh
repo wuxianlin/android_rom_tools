@@ -16,9 +16,11 @@
 # limitations under the License.
 #
 
+MYDIR=`dirname $0`
+
 ROM=$1
 
-SDAT2IMG=sdat2img/sdat2img.py
+SDAT2IMG=$MYDIR/../sdat2img/sdat2img.py
 if [ ! -r "$SDAT2IMG" ]
 then
     echo "can't find $SDAT2IMG"

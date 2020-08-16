@@ -1,8 +1,10 @@
 #!/bin/bash
 
+MYDIR=`dirname $0`
+
 ROM=$1
 OUT=$2
-apktool=$(find tools -name apktool*.jar)
+apktool=$(find $MYDIR -name apktool*.jar)
 
 if [ -z "$ROM" ]
 then

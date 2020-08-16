@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+MYDIR=`dirname $0`
+
 ROMZIP=$1
 OUT=$2
 
@@ -30,14 +32,14 @@ rm -rf $OUT/*
 unzip -q -o $1 -d $OUT/rom
 rm $1
 if [ -f $OUT/rom/payload.bin ];then
-    python extract_android_ota_payload/extract_android_ota_payload.py $OUT/rom/payload.bin $OUT/rom
+    python $MYDIR/extract_android_ota_payload/extract_android_ota_payload.py $OUT/rom/payload.bin $OUT/rom
     rm $OUT/rom/payload.bin
-    tools/deimg.sh $OUT/rom
+    $MYDIR/tools/deimg.sh $OUT/rom
 else
-    tools/dedat.sh $OUT/rom
+    $MYDIR/tools/dedat.sh $OUT/rom
 fi
 if [ -d $OUT/rom/vendor/euclid ];then
-    tools/deimg.sh $OUT/rom/vendor/euclid
+    $MYDIR/tools/deimg.sh $OUT/rom/vendor/euclid
 fi
 
 if [ -d $OUT/rom/system/system ];then
@@ -54,11 +56,11 @@ for prop in `find $OUT/rom -name build*.prop`;do
 done
 echo found sdk version $sdk
 if [ $sdk -ge 26 ]; then
-	tools/devdex.sh $OUT/rom $OUT/rom-deodexed
+	$MYDIR/tools/devdex.sh $OUT/rom $OUT/rom-deodexed
 elif [ $sdk -ge 23 ];then
-	tools/deoat.sh $OUT/rom $OUT/rom-deodexed
+	$MYDIR/tools/deoat.sh $OUT/rom $OUT/rom-deodexed
 elif [ $sdk -ge 21 ];then
-	tools/deoat-oat2dex.sh $OUT/rom $OUT/rom-deodexed
+	$MYDIR/tools/deoat-oat2dex.sh $OUT/rom $OUT/rom-deodexed
 else
-	tools/deodex.sh $sdk $OUT/rom $OUT/rom-deodexed
+	$MYDIR/tools/deodex.sh $sdk $OUT/rom $OUT/rom-deodexed
 fi
