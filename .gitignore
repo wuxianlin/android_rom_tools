@@ -1,10 +1,12 @@
 jadx.zip
+otatools.zip
 tools/apktool*.jar
 tools/baksmali*.jar
 tools/oat2dex*.jar
 tools/smali*.jar
 oatdumpdexloc/oatdumpdexloc
 jadx/
+otatools/
 out/
 extract_android_ota_payload/
 sdat2img/

@@ -84,5 +84,10 @@ OAT2DEX_ASSET_URL="https://github.com/testwhat/SmaliEx/releases/download/snapsho
 echo $OAT2DEX_ASSET_URL
 curl --silent --show-error --location --fail --retry 3 --output tools/oat2dex.jar $OAT2DEX_ASSET_URL
 
+URL_CI_ANDROID=https://ci.android.com/builds/latest/branches/aosp-master/targets/aosp_arm64-userdebug/view/BUILD_INFO
+RURL_CI_ANDROID=$(curl -Ls -o /dev/null -w %{url_effective} ${URL_CI_ANDROID})
+wget -nv ${RURL_CI_ANDROID%/view/BUILD_INFO}/raw/otatools.zip -O otatools.zip
+unzip -q -o otatools.zip -d otatools
+
 cd $PWD
 
