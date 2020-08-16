@@ -36,6 +36,13 @@ if [ -f $OUT/rom/payload.bin ];then
     rm $OUT/rom/payload.bin
     #$MYDIR/tools/deimg.sh $OUT/rom
 else
+    for datsplit in `find out/rom -name  *.new.dat.*|sort --version-sort`;do
+	path=$(dirname $datsplit)
+	datname=$(basename $datsplit)
+	partname=${datname%%.*}
+	cat $datsplit >> $path/$partname.new.dat
+	rm $datsplit
+    done
     $MYDIR/tools/dedat.sh $OUT/rom
 fi
 #if [ -d $OUT/rom/vendor/euclid ];then
