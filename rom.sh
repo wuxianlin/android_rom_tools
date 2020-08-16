@@ -34,13 +34,14 @@ rm $1
 if [ -f $OUT/rom/payload.bin ];then
     python $MYDIR/extract_android_ota_payload/extract_android_ota_payload.py $OUT/rom/payload.bin $OUT/rom
     rm $OUT/rom/payload.bin
-    $MYDIR/tools/deimg.sh $OUT/rom
+    #$MYDIR/tools/deimg.sh $OUT/rom
 else
     $MYDIR/tools/dedat.sh $OUT/rom
 fi
-if [ -d $OUT/rom/vendor/euclid ];then
-    $MYDIR/tools/deimg.sh $OUT/rom/vendor/euclid
-fi
+#if [ -d $OUT/rom/vendor/euclid ];then
+#    $MYDIR/tools/deimg.sh $OUT/rom/vendor/euclid
+#fi
+$MYDIR/tools/deimg.sh $OUT/rom
 
 if [ -d $OUT/rom/system/system ];then
 	mv $OUT/rom/system $OUT/rom/system_root

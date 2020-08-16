@@ -1,13 +1,37 @@
 #!/usr/bin/env bash
 
+MYDIR=`dirname $0`
 ROM=$1
 
-for img in `find $ROM -name "*.img"`;do
+for img in `find $ROM -name "super.img"`;do
 	imgname=$(basename $img)
 	path=$(dirname $img)
 	partname=${imgname%.*}
+	echo found super image
+	imgfiletype=`file $img`
+	if [[ "$imgfiletype" == *"Android sparse image"* ]];then
+	    echo found android sparse image
+	    $MYDIR/../otatools/bin/simg2img $img $path/${partname}_ext4.img
+	    rm $img
+	    mv $path/${partname}_ext4.img $img
+	fi
+	$MYDIR/../otatools/bin/lpunpack $img $path
+	rm $img
+done
+
+for img in `find $ROM -name "*.img" -not -name "super.img" -not -name "super_ext4.img"`;do
+	imgname=$(basename $img)
+	path=$(dirname $img)
+	partname=${imgname%.*}
+	imgfiletype=`file $img`
 	name=`whoami`
 	outdir=`mktemp -d /tmp/dedat.mount.XXXXX`
+	if [[ "$imgfiletype" == *"Android sparse image"* ]];then
+	    echo found android sparse image
+	    $MYDIR/../otatools/bin/simg2img $img $path/${partname}_ext4.img
+	    rm $img
+	    mv $path/${partname}_ext4.img $img
+	fi
 	sudo mount -o ro,loop $img $outdir
         if [ $? -ne 0 ]; then
             rm -rf $outdir
