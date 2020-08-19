@@ -119,7 +119,6 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 				cp $ROM/$jar $OUT/$jarfolder
 			elif [ -f $ROM/system/$jar ]; then
 				cp $ROM/system/$jar $OUT/$jarfolder
-			el
 			else
 				echo "---- $jar not found ----"
 				break
