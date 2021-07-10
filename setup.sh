@@ -47,7 +47,8 @@ make -C oatdumpdexloc
 
 git clone https://github.com/xpirt/sdat2img
 
-git clone https://github.com/cyxx/extract_android_ota_payload
+git clone https://github.com/vm03/payload_dumper
+curl -s https://android.googlesource.com/platform/system/update_engine/+/refs/heads/master/scripts/update_payload/update_metadata_pb2.py?format=TEXT | base64 -d > payload_dumper/update_metadata_pb2.py
 
 mkdir tools
 

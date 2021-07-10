@@ -33,7 +33,7 @@ for apk in `find $ROM -name *.apk -o -name *.jar`; do
 		outfolder=$folder
 	fi
 	mkdir -p $OUT/$outfolder
-	$JADX_BIN $apk -d $OUT/$outfolder
+	$JADX_BIN $apk --show-bad-code -d $OUT/$outfolder
 	#if unzip -v $apk | grep " classes.dex" >/dev/null; then
 	#	echo "---- $apk has dex file ----"
 	#fi

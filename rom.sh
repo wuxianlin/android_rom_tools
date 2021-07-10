@@ -32,7 +32,7 @@ rm -rf $OUT/*
 unzip -q -o $1 -d $OUT/rom
 rm $1
 if [ -f $OUT/rom/payload.bin ];then
-    python $MYDIR/extract_android_ota_payload/extract_android_ota_payload.py $OUT/rom/payload.bin $OUT/rom
+    python3 $MYDIR/payload_dumper/payload_dumper.py $OUT/rom/payload.bin --out $OUT/rom
     rm $OUT/rom/payload.bin
     #$MYDIR/tools/deimg.sh $OUT/rom
 else

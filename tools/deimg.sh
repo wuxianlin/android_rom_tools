@@ -45,3 +45,29 @@ for img in `find $ROM -name "*.img" -not -name "super.img" -not -name "super_ext
             rm $img
         fi
 done
+
+for apex in `find $ROM -name *.apex`;do
+    echo $apex
+    outapex=${apex/.apex/}
+    mkdir -p $outapex
+    unzip -o $apex -d $outapex
+    rm $apex
+    if [ -f $outapex/apex_payload.img ];then
+        echo start unpack $outapex/apex_payload.img
+        img=$outapex/apex_payload.img
+	name=`whoami`
+	outdir=`mktemp -d /tmp/dedat.mount.XXXXX`
+	sudo mount -o ro,loop $img $outdir
+        if [ $? -ne 0 ]; then
+            rm -rf $outdir
+	    echo "deimg done, not support"
+        else
+	    sudo cp -r $outdir/* $outapex
+	    sudo chown -R $name:$name $outapex
+	    sudo umount $outdir
+	    rm -rf $outdir
+	    echo "deimg done, output:$outapex"
+            rm $img
+        fi
+    fi
+done
