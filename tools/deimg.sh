@@ -32,14 +32,24 @@ for img in `find $ROM -name "*.img" -not -name "super.img" -not -name "super_ext
 	    rm $img
 	    mv $path/${partname}_ext4.img $img
 	fi
-	sudo mount -o ro,loop $img $outdir || sudo mount -t erofs -o ro,loop $img $outdir
+	USESUDO=0
+	$MYDIR/../erofs-utils/fuse/erofsfuse $path/$partname.img $outdir
+	if [ $? -ne 0 ]; then
+	    USESUDO=1
+	    sudo mount -o ro,loop $img $outdir
+	fi
         if [ $? -ne 0 ]; then
             rm -rf $outdir
 	    echo "deimg done, not support"
         else
-	    sudo cp -r $outdir $path/$partname
-	    sudo chown -R $name:$name $path/$partname
-	    sudo umount $outdir
+	    if [ $USESUDO -eq 1 ];then
+	        sudo cp -r $outdir $path/$partname
+	        sudo chown -R $name:$name $path/$partname
+	        sudo umount $outdir
+	    else
+	        cp -r $outdir $path/$partname
+	        fusermount -u $outdir
+	    fi
 	    rm -rf $outdir
 	    echo "deimg done, output:$path/$partname"
             rm $img
