@@ -32,7 +32,7 @@ for img in `find $ROM -name "*.img" -not -name "super.img" -not -name "super_ext
 	    rm $img
 	    mv $path/${partname}_ext4.img $img
 	fi
-	sudo mount -o ro,loop $img $outdir
+	sudo mount -o ro,loop $img $outdir || sudo mount -t erofs -o ro,loop $img $outdir
         if [ $? -ne 0 ]; then
             rm -rf $outdir
 	    echo "deimg done, not support"
