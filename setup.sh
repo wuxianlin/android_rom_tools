@@ -33,6 +33,17 @@ done
 
 cd ..
 
+#https://github.com/erofs/erofsmoke
+sudo apt-get install -y libfuse-dev
+curl -L https://github.com/lz4/lz4/archive/refs/tags/v1.9.3.tar.gz | tar -zxv
+make BUILD_SHARED=no -C lz4-1.9.3 && lz4libdir=$(pwd)/lz4-1.9.3/lib
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git -b experimental
+cd erofs-utils
+./autogen.sh
+./configure --enable-fuse --with-lz4-incdir=${lz4libdir} --with-lz4-libdir=${lz4libdir}
+make
+cd ..
+
 if [ $GITHUB_TOKEN ];then
 	LATEST_JADX_JSON=$(curl --fail --retry 3 -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/skylot/jadx/releases/latest)
 else
