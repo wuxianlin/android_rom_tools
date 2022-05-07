@@ -35,9 +35,9 @@ cd ..
 
 #https://github.com/erofs/erofsmoke
 sudo apt-get install -y libfuse-dev
-curl -L https://github.com/lz4/lz4/archive/refs/tags/v1.9.3.tar.gz | tar -zxv
-make BUILD_SHARED=no -C lz4-1.9.3 && lz4libdir=$(pwd)/lz4-1.9.3/lib
-git clone git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git -b experimental
+git clone https://github.com/lz4/lz4 -b dev
+make BUILD_SHARED=no -C lz4 && lz4libdir=$(pwd)/lz4/lib
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git -b dev
 cd erofs-utils
 ./autogen.sh
 ./configure --enable-fuse --with-lz4-incdir=${lz4libdir} --with-lz4-libdir=${lz4libdir}
