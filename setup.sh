@@ -29,6 +29,7 @@ for ((i=28;;i++));do
 	if [[ "$(shasum -a256 $deps_zip | cut -d ' ' -f1)" == "${!deps_latest_sig}" ]];then
 		unzip -q -o $deps_zip -d bin/api-$i
 	fi
+  rm $deps_zip
 done
 
 cd ..
@@ -100,6 +101,8 @@ URL_CI_ANDROID=https://ci.android.com/builds/latest/branches/aosp-master/targets
 RURL_CI_ANDROID=$(curl -Ls -o /dev/null -w %{url_effective} ${URL_CI_ANDROID})
 wget -nv ${RURL_CI_ANDROID%/view/BUILD_INFO}/raw/otatools.zip -O otatools.zip
 unzip -q -o otatools.zip -d otatools
+
+rm otatools.zip
 
 cd $PWD
 
