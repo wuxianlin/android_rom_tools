@@ -3,6 +3,17 @@
 MYDIR=`dirname $0`
 ROM=$1
 
+for img in `find $ROM -name *boot.img -o -name *recovery.img`;do
+	imgname=$(basename $img)
+	path=$(dirname $img)
+	partname=${imgname%.*}
+	echo found $imgname image
+	$MYDIR/../AIK-Linux/unpackimg.sh --nosudo $img
+	mv $MYDIR/../AIK-Linux/ramdisk $path/$partname
+	mv $MYDIR/../AIK-Linux/split_img $path/${partname}_img
+	$MYDIR/../AIK-Linux/cleanup.sh
+done
+
 for img in `find $ROM -name "super.img"`;do
 	imgname=$(basename $img)
 	path=$(dirname $img)
