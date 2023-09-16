@@ -59,6 +59,10 @@ make -C oatdumpdexloc
 
 git clone https://github.com/xpirt/sdat2img
 
+#git clone https://github.com/superr/splituapp
+git clone https://github.com/MarkMuth/splituapp
+git -C splituapp apply ../patches/splituapp.diff
+
 git clone https://github.com/vm03/payload_dumper
 curl -s https://android.googlesource.com/platform/system/update_engine/+/refs/heads/main/scripts/update_metadata_pb2.py?format=TEXT | base64 -d > payload_dumper/update_metadata_pb2.py
 

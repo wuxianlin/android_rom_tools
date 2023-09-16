@@ -1,0 +1,41 @@
+diff --git a/splituapp b/splituapp
+index 30ca1af..89d9921 100755
+--- a/splituapp
++++ b/splituapp
+@@ -27,7 +27,7 @@ def extract(source, output, flist, skipcrc, crcpath):
+ 
+ 	bytenum = 4
+ 	outdir = output
+-	img_files = []
++	img_files = {}
+ 
+ 	try:
+ 		os.makedirs(outdir)
+@@ -64,12 +64,11 @@ def extract(source, output, flist, skipcrc, crcpath):
+ 			f.seek(22, 1)
+ 			crcdata = f.read(headersize - 98)
+ 
+-			img = filename + '.img'
+-			img_path = os.path.join(output, img)
+-
+ 			if not flist or filename in flist:
+-				if filename in img_files:
+-					filename = filename+'_2'
++				img = filename + '.img'
++				if filename in img_files.keys():
++					img = filename+'_'+str(len(img_files[filename])+1) + '.img'
++				img_path = os.path.join(output, img)
+ 
+ 				print('Extracting '+ img)
+ 
+@@ -87,7 +86,9 @@ def extract(source, output, flist, skipcrc, crcpath):
+ 					print('ERROR: Failed to create ' + img +'\n')
+ 					return 1
+ 
+-				img_files.append(filename)
++				if filename not in img_files.keys():
++					img_files[filename]=[]
++				img_files[filename].append(img)
+ 
+ 				if os.name != 'nt':
+ 					if os.path.isfile(crcpath) and not skipcrc:

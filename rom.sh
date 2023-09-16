@@ -35,6 +35,11 @@ if [ -f $OUT/rom/payload.bin ];then
     python3 $MYDIR/payload_dumper/payload_dumper.py $OUT/rom/payload.bin --out $OUT/rom
     rm $OUT/rom/payload.bin
     #$MYDIR/tools/deimg.sh $OUT/rom
+elif [ -f $OUT/rom/UPDATE.APP ];then
+    for app in `find $OUT/rom -name *.APP`;do
+        python $MYDIR/splituapp/splituapp -f $app -s -o $OUT/rom
+        rm $app
+    done
 else
     for datsplit in `find $OUT/rom -name  *.new.dat.*|sort --version-sort`;do
 	path=$(dirname $datsplit)
