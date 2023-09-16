@@ -35,12 +35,5 @@ for list in `find $ROM -name *.transfer.list`;do
 	[ -e $path/$partname.new.dat.br ] && brotli --decompress $path/$partname.new.dat.br --output=$path/$partname.new.dat && rm $path/$partname.new.dat.br
 	[ -e $path/$partname.new.dat ] && $SDAT2IMG $list $path/$partname.new.dat $path/$partname.img && rm $list $path/$partname.new.dat $path/$partname.patch.dat
 	[ ! -e $path/$partname.img ] && continue
-	name=`whoami`
-	outdir=`mktemp -d /tmp/dedat.mount.XXXXX`
-	sudo mount -o ro,loop $path/$partname.img $outdir
-	sudo cp -r $outdir $path/$partname
-	sudo chown -R $name:$name $path/$partname
-	sudo umount $outdir
-	rm -rf $outdir $path/$partname.img
-	echo "dedat done, output:$path/$partname"
+	echo "dedat done, output:$path/$partname.img"
 done

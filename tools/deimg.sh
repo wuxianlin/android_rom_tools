@@ -3,70 +3,110 @@
 MYDIR=`dirname $(readlink -f $0)`
 ROM=$1
 
-for img in `find $ROM -name *boot.img -o -name *recovery.img`;do
+check_simg() {
+        TOOL=$1
+        IMG=$2
+        imgfiletype=`file $IMG`
+        if [[ "$imgfiletype" == *"Android sparse image"* ]];then
+            echo found android sparse image
+            $TOOL $IMG ${IMG}.raw
+            if [ $? -ne 0 ]; then
+                echo simg2img faild
+                rm $IMG.raw
+            else
+                echo simg2img success
+                rm $IMG
+                mv ${IMG}.raw $IMG
+            fi
+        fi
+}
+
+unpack_img() {
+        MYDIR=$1
+        img=$2
+        OUTDIR=$3
+	name=`whoami`
+	tmpdir=`mktemp -d /tmp/dedat.mount.XXXXX`
+        check_simg $MYDIR/../otatools/bin/simg2img $img
+	USESUDO=0
+	$MYDIR/../erofs-utils/fuse/erofsfuse $img $tmpdir || $MYDIR/../e2fsprogs/misc/fuse2fs -o fakeroot,ro $img $tmpdir
+	if [ $? -ne 0 ]; then
+	    USESUDO=1
+	    sudo mount -o ro,loop $img $tmpdir
+	fi
+        if [ $? -ne 0 ]; then
+            rm -rf $tmpdir
+	    echo "deimg done, not support"
+        else
+	    if [ $USESUDO -eq 1 ];then
+	        if [ -d $OUTDIR ];then
+	            sudo cp -r $tmpdir/* $OUTDIR/
+	        else
+	            sudo cp -r $tmpdir $OUTDIR
+	        fi
+	        sudo chown -R $name:$name $OUTDIR
+	        sudo umount $tmpdir
+	    else
+	        if [ -d $OUTDIR ];then
+	            cp -r $tmpdir/* $OUTDIR/
+	        else
+	            cp -r $tmpdir $OUTDIR
+	        fi
+	        fusermount -u $tmpdir
+	    fi
+	    rm -rf $tmpdir
+	    echo "deimg done, output:$OUTDIR"
+            rm $img
+        fi
+}
+
+#unpack boot image
+for img in `find $ROM -name *boot.img -o -name *recovery.img -o -name *ramdis.img -o -name *ramdisk.img`;do
 	imgname=$(basename $img)
 	path=$(dirname $img)
 	partname=${imgname%.*}
 	echo found $imgname image
 	$MYDIR/../AIK-Linux/unpackimg.sh --nosudo $img
-	mv $MYDIR/../AIK-Linux/ramdisk $path/$partname
-	mv $MYDIR/../AIK-Linux/split_img $path/${partname}_img
+	if [ $? -eq 0 ]; then
+	    mv $MYDIR/../AIK-Linux/ramdisk $path/$partname
+	    mv $MYDIR/../AIK-Linux/split_img $path/${partname}_img
+	    rm $img
+	fi
 	$MYDIR/../AIK-Linux/cleanup.sh
 done
 
-for img in `find $ROM -name "super.img"`;do
+#lpunpack super image
+for img in `find $ROM -name "super*.img"`;do
 	imgname=$(basename $img)
 	path=$(dirname $img)
 	partname=${imgname%.*}
-	echo found super image
-	imgfiletype=`file $img`
-	if [[ "$imgfiletype" == *"Android sparse image"* ]];then
-	    echo found android sparse image
-	    $MYDIR/../otatools/bin/simg2img $img $path/${partname}_ext4.img
-	    rm $img
-	    mv $path/${partname}_ext4.img $img
-	fi
-	$MYDIR/../otatools/bin/lpunpack $img $path
+	echo found super image $img
+	check_simg $MYDIR/../otatools/bin/simg2img $img
+	mkdir $path/$partname
+	$MYDIR/../otatools/bin/lpunpack $img $path/$partname
+	for childimg in `find $path/$partname -name "*.img"`;do
+	    childimgname=$(basename $childimg)
+	    if [ "$(tr -d '\0' < $childimg | wc -c)" -eq 0 ]; then
+	        echo "All zeroes."
+	        rm $childimg
+	    elif [ ! -f $path/$childimgname ]; then
+	        mv $childimg $path/$childimgname
+	    fi 
+	done
 	rm $img
 done
 
-for img in `find $ROM -name "*.img" -not -name "super.img" -not -name "super_ext4.img"`;do
+
+#unpack common image
+for img in `find $ROM -name "*.img"`;do
 	imgname=$(basename $img)
 	path=$(dirname $img)
 	partname=${imgname%.*}
-	imgfiletype=`file $img`
-	name=`whoami`
-	outdir=`mktemp -d /tmp/dedat.mount.XXXXX`
-	if [[ "$imgfiletype" == *"Android sparse image"* ]];then
-	    echo found android sparse image
-	    $MYDIR/../otatools/bin/simg2img $img $path/${partname}_ext4.img
-	    rm $img
-	    mv $path/${partname}_ext4.img $img
-	fi
-	USESUDO=0
-	$MYDIR/../erofs-utils/fuse/erofsfuse $path/$partname.img $outdir
-	if [ $? -ne 0 ]; then
-	    USESUDO=1
-	    sudo mount -o ro,loop $img $outdir
-	fi
-        if [ $? -ne 0 ]; then
-            rm -rf $outdir
-	    echo "deimg done, not support"
-        else
-	    if [ $USESUDO -eq 1 ];then
-	        sudo cp -r $outdir $path/$partname
-	        sudo chown -R $name:$name $path/$partname
-	        sudo umount $outdir
-	    else
-	        cp -r $outdir $path/$partname
-	        fusermount -u $outdir
-	    fi
-	    rm -rf $outdir
-	    echo "deimg done, output:$path/$partname"
-            rm $img
-        fi
+	check_simg $MYDIR/../otatools/bin/simg2img $img
+	unpack_img $MYDIR $img $path/$partname
 done
 
+#unpack apex
 for apex in `find $ROM -name *.apex`;do
     echo $apex
     outapex=${apex/.apex/}
@@ -76,19 +116,6 @@ for apex in `find $ROM -name *.apex`;do
     if [ -f $outapex/apex_payload.img ];then
         echo start unpack $outapex/apex_payload.img
         img=$outapex/apex_payload.img
-	name=`whoami`
-	outdir=`mktemp -d /tmp/dedat.mount.XXXXX`
-	sudo mount -o ro,loop $img $outdir
-        if [ $? -ne 0 ]; then
-            rm -rf $outdir
-	    echo "deimg done, not support"
-        else
-	    sudo cp -r $outdir/* $outapex
-	    sudo chown -R $name:$name $outapex
-	    sudo umount $outdir
-	    rm -rf $outdir
-	    echo "deimg done, output:$outapex"
-            rm $img
-        fi
+	unpack_img $MYDIR $img $outapex
     fi
 done

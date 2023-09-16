@@ -45,6 +45,12 @@ cd erofs-utils
 make
 cd ..
 
+git clone https://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git
+cd e2fsprogs
+./configure
+make
+cd ..
+
 if [ $GITHUB_TOKEN ];then
 	LATEST_JADX_JSON=$(curl --fail --retry 3 -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/skylot/jadx/releases/latest)
 else
