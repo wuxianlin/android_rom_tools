@@ -47,7 +47,7 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 	vdexfolder="$(dirname $vdex)"
 	vdexname="$(basename $vdex)"
 	#arch=${vdexfolder##*/}
-	if [ -f $vdexfolder"64/"$vdexname ] || [ -f $vdexfolder"_64/"$vdexname ]; then
+	if ([ -f $vdexfolder"64/"$vdexname ] && [ ! -h $vdexfolder"64/"$vdexname ]) || ([ -f $vdexfolder"_64/"$vdexname ] && [ ! -h $vdexfolder"_64/"$vdexname ]); then
 		echo "---- $vdexfolder"64/"$vdexname exists ----"
 		echo "---- devdex $vdex stop ----"
 		echo " "
@@ -75,6 +75,9 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 		fi
 	fi
 	apiLevel=$($VDEX_EXTRACTOR_BIN --get-api -i "$vdex" || echo "API-0")
+	if [[ $apiLevel =~ "ERROR" ]];then
+	    apiLevel=$maxapilevel
+	fi
 	apiLevel=${apiLevel//API-/}
 	cdexConvBinTmp=$MYDIR/../vdexExtractor/bin/api-$apiLevel/bin/compact_dex_converter
 	if [ -f $cdexConvBinTmp ];then
