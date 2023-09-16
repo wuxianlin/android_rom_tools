@@ -75,6 +75,15 @@ for img in `find $ROM -name *boot.img -o -name *recovery.img -o -name *ramdis.im
 	$MYDIR/../AIK-Linux/cleanup.sh
 done
 
+#moto and qcom rom
+for img in `find $ROM -name *_sparsechunk.0`;do
+	imgname=$(basename $img)
+	path=$(dirname $img)
+	partname=${imgname%_*}
+	$MYDIR/../otatools/bin/simg2img $path/${partname}_sparsechunk.* $path/${partname}
+	rm $path/${partname}_sparsechunk.*
+done
+
 #lpunpack super image
 for img in `find $ROM -name "super*.img"`;do
 	imgname=$(basename $img)
