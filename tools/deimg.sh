@@ -105,6 +105,25 @@ for img in `find $ROM -name "super*.img"`;do
 	rm $img
 done
 
+for img in `find $ROM -name "*_a.img"`;do
+	imgname=$(basename $img)
+	path=$(dirname $img)
+	partname=${imgname%_a.img}
+	if [ ! -f $path/${partname}.img ];then
+	    mv $img $path/${partname}.img
+	fi
+done
+
+for img in `find $ROM -name "*_b.img"`;do
+	imgname=$(basename $img)
+	path=$(dirname $img)
+	partname=${imgname%_b.img}
+	if [ ! -f $path/${partname}.img ];then
+	    mv $img $path/${partname}.img
+	elif [ ! -f $path/${partname}_other.img ];then
+	    mv $img $path/${partname}_other.img
+	fi
+done
 
 #unpack common image
 for img in `find $ROM -name "*.img"`;do
