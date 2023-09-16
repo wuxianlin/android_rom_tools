@@ -155,6 +155,18 @@ for img in `find $ROM -name "*.img"`;do
 	unpack_img $MYDIR $img $path/$partname
 done
 
+#unpack capex
+for capex in `find $ROM -name *.capex`;do
+    echo $capex
+    outapex=${capex/.capex/}
+    mkdir -p $outapex
+    unzip -o $capex -d $outapex
+    if [ -f $outapex/original_apex ];then
+        mv $outapex/original_apex $outapex.apex
+    fi
+    rm -rf $capex $outapex
+done
+
 #unpack apex
 for apex in `find $ROM -name *.apex`;do
     echo $apex
