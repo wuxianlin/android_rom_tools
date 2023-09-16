@@ -146,7 +146,7 @@ for vdex in `find $ROM -name *.vdex -type f`; do
 done
 
 find $OUT -name *dex
-for apk in `find $ROM -name *.apk -o -name *.jar`; do
+for apk in `find $ROM -name *.apk -o -name *.jar -o -name *.hap`; do
 	apkfolder="$(dirname $apk)"
 	folder=${apkfolder#$ROM*}
 	foldermaybe=${folder/system/}
