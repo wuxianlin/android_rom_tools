@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-MYDIR=`dirname $0`
+MYDIR=`dirname $(readlink -f $0)`
 
 APILEVEL=$1
 ROM=$2
@@ -39,8 +39,8 @@ fi
 mkdir -p $OUT
 rm -rf $OUT/*
 
-smali=$(find $MYDIR -name *smali* -not -name *baksmali*)
-baksmali=$(find $MYDIR -name *baksmali*)
+smali=$(find $MYDIR -name "*smali*" -not -name "*baksmali*"|sort -r --version-sort|grep -m1 jar)
+baksmali=$(find $MYDIR -name "*baksmali*.jar"|sort -r --version-sort|grep -m1 jar)
 if [ "$smali" = "" ] || [ "$baksmali" = "" ]; then
      echo "baksmali or smali not found"
      exit 1

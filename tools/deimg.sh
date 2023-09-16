@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MYDIR=`dirname $0`
+MYDIR=`dirname $(readlink -f $0)`
 ROM=$1
 
 for img in `find $ROM -name *boot.img -o -name *recovery.img`;do

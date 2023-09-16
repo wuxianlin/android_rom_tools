@@ -1,10 +1,10 @@
 #!/bin/bash
 
-MYDIR=`dirname $0`
+MYDIR=`dirname $(readlink -f $0)`
 
 ROM=$1
 OUT=$2
-apktool=$(find $MYDIR -name apktool*.jar)
+apktool=$(find $MYDIR -name "apktool*.jar"|sort -r --version-sort|grep -m1 jar)
 
 if [ -z "$ROM" ]
 then

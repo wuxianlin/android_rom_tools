@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-MYDIR=`dirname $0`
+MYDIR=`dirname $(readlink -f $0)`
 
 ROM=$1
 OUT=$2

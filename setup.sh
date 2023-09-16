@@ -2,7 +2,7 @@
 
 PWD=`pwd`
 
-MYDIR=`dirname $0`
+MYDIR=`dirname $(readlink -f $0)`
 cd $MYDIR
 
 GITHUB_TOKEN=$1
