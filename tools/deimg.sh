@@ -21,6 +21,21 @@ check_simg() {
         fi
 }
 
+check_zstd() {
+        TOOL=$1
+        IMG=$2
+        imgfiletype=`file $IMG`
+        if [[ "$imgfiletype" == *"Zstandard compressed data "* ]];then
+            echo found zstandard compressed image
+            python3 $TOOL $IMG ${IMG}.raw
+            if [ $? -ne 0 ]; then
+                echo decompress faild
+            else
+                echo decompress success
+            fi
+        fi
+}
+
 unpack_img() {
         MYDIR=$1
         img=$2
@@ -152,6 +167,7 @@ for img in `find $ROM -name "*.img"`;do
 	path=$(dirname $img)
 	partname=${imgname%.*}
 	check_simg $MYDIR/../otatools/bin/simg2img $img
+	check_zstd $MYDIR/zstd_decompress.py $img
 	unpack_img $MYDIR $img $path/$partname
 done
 
