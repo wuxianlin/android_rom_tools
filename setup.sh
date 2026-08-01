@@ -66,7 +66,8 @@ make -C oatdumpdexloc
 git clone https://github.com/xpirt/sdat2img
 
 #git clone https://github.com/superr/splituapp
-git clone https://github.com/MarkMuth/splituapp
+#git clone https://github.com/MarkMuth/splituapp
+git clone https://github.com/Natsume324/splituapp
 git -C splituapp apply ../patches/splituapp.diff
 
 git clone https://github.com/vm03/payload_dumper

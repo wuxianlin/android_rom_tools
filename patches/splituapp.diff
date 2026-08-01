@@ -1,41 +1,28 @@
 diff --git a/splituapp b/splituapp
-index 30ca1af..89d9921 100755
+index 587543b..69abce1 100755
 --- a/splituapp
 +++ b/splituapp
-@@ -27,7 +27,7 @@ def extract(source, output, flist, skipcrc, crcpath):
+@@ -19,8 +19,8 @@ import sys
+ import struct
+ import argparse
  
- 	bytenum = 4
- 	outdir = output
--	img_files = []
-+	img_files = {}
+-def extract(source, flist):
+-    outdir = 'output'
++def extract(source, output, flist):
++    outdir = output
+     img_files = set()
  
- 	try:
- 		os.makedirs(outdir)
-@@ -64,12 +64,11 @@ def extract(source, output, flist, skipcrc, crcpath):
- 			f.seek(22, 1)
- 			crcdata = f.read(headersize - 98)
+     try:
+@@ -154,6 +154,11 @@ if __name__ == '__main__':
+     optional = parser.add_argument_group('Optional')
+     optional.add_argument("-h", "--help", action="help", help="show this help message and exit")
+     optional.add_argument("-l", "--list", nargs="*", metavar=('img1', 'img2'), help="List of img files to extract")
++    optional.add_argument("-o", "--output", action="store", help="Put output in the given folder")
+     args = parser.parse_args()
  
--			img = filename + '.img'
--			img_path = os.path.join(output, img)
--
- 			if not flist or filename in flist:
--				if filename in img_files:
--					filename = filename+'_2'
-+				img = filename + '.img'
-+				if filename in img_files.keys():
-+					img = filename+'_'+str(len(img_files[filename])+1) + '.img'
-+				img_path = os.path.join(output, img)
- 
- 				print('Extracting '+ img)
- 
-@@ -87,7 +86,9 @@ def extract(source, output, flist, skipcrc, crcpath):
- 					print('ERROR: Failed to create ' + img +'\n')
- 					return 1
- 
--				img_files.append(filename)
-+				if filename not in img_files.keys():
-+					img_files[filename]=[]
-+				img_files[filename].append(img)
- 
- 				if os.name != 'nt':
- 					if os.path.isfile(crcpath) and not skipcrc:
+-    extract(args.filename, args.list)
++    output_path = "output"
++    if (args.output != None):
++        output = args.output
++
++    extract(args.filename, output, args.list)

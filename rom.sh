@@ -37,7 +37,7 @@ if [ -f $OUT/rom/payload.bin ];then
     #$MYDIR/tools/deimg.sh $OUT/rom
 elif [ -f $OUT/rom/UPDATE.APP ];then
     for app in `find $OUT/rom -name *.APP`;do
-        python $MYDIR/splituapp/splituapp -f $app -s -o $OUT/rom
+        python $MYDIR/splituapp/splituapp -f $app -o $OUT/rom
         rm $app
     done
 else
