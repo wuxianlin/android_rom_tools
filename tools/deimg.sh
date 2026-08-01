@@ -100,25 +100,22 @@ for img in `find $ROM -name *_sparsechunk.0`;do
 done
 
 #huawei rom
-for img in `find $ROM -name super_*.img|sort --version-sort`;do
-	imgname=$(basename $img)
-	path=$(dirname $img)
-	partname=${imgname%.*}
-	echo found super image $img
-	check_simg $MYDIR/../otatools/bin/simg2img $img
-	mkdir $path/$partname
-	$MYDIR/../otatools/bin/lpunpack $img $path/$partname
-	if [ $? -ne 0 ]; then
-		echo failed to lpunpack
-		echo try huawei scheme
-		if [ -f $path/super.img ];then
-			check_simg $MYDIR/../otatools/bin/simg2img $path/super.img
-			dd if=$path/super.img of=$img bs=1048576 count=1 conv=notrunc
-		fi
-	else
- 		rm -rf $path/$partname
-	fi
-done
+readarray -t sparse_files < <(find "$ROM" -type f -name "super*.img" -exec file {} + | grep "Android sparse image" | cut -d: -f1 | sort)
+if [ ${#sparse_files[@]} -gt 1 ]; then
+    echo "found  ${#sparse_files[@]} sparse super img, start merge ..."
+    
+    if $MYDIR/../otatools/bin/simg2img "${sparse_files[@]}" "$ROM/super.raw.tmp"; then
+        for img_file in "${sparse_files[@]}"; do
+            rm -f "$img_file"
+        done
+
+        mv "${ROM}/super.raw.tmp" "${ROM}/super.img"
+        echo "merge sucess"
+    else
+        echo "simg2img failed"
+        rm -f "${ROM}/super.raw.tmp"
+    fi
+fi
 
 #lpunpack super image
 for img in `find $ROM -name "super*.img"`;do
