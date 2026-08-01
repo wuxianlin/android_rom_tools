@@ -1,7 +1,7 @@
 Android decompile tools
 ==============================================
 
-`sudo apt-get install axel brotli fuse`
+`sudo apt-get install axel brotli fuse automake pkg-config libtool libfuse-dev libfuse3-dev`
 `python3 -m pip install -r requirements.txt`
 
 ## Usage

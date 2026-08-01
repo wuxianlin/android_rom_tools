@@ -35,19 +35,20 @@ done
 cd ..
 
 #https://github.com/erofs/erofsmoke
-sudo apt-get install -y libfuse-dev
+sudo apt-get install -y libfuse-dev libfuse3-dev uuid-dev
 git clone https://github.com/lz4/lz4 -b dev
-make BUILD_SHARED=no -C lz4 && lz4libdir=$(pwd)/lz4/lib
+make BUILD_SHARED=no -C lz4 liblz4.a && lz4libdir=$(pwd)/lz4/lib
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git -b dev
 cd erofs-utils
 ./autogen.sh
-./configure --enable-fuse --with-lz4-incdir=${lz4libdir} --with-lz4-libdir=${lz4libdir}
+CFLAGS="-I${lz4libdir}" LDFLAGS="-L${lz4libdir}" PKG_CONFIG_PATH="${lz4libdir}:${PKG_CONFIG_PATH}" ./configure --enable-fuse
 make
 cd ..
 
-git clone https://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git
+git clone https://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git -b next
+sed -i '1s/^/#include <stdbool.h>\n/' e2fsprogs/misc/fuse2fs.c
 cd e2fsprogs
-./configure
+CFLAGS="$CFLAGS -std=gnu11" ./configure --enable-fuse2fs
 make
 cd ..
 
