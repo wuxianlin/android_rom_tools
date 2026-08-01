@@ -63,12 +63,13 @@ if [ -d $OUT/rom/system/system ];then
 fi
 
 sdk=0
-for prop in `find $OUT/rom -name build*.prop`;do
-	sdkversion=`cat $prop|grep ro.build.version.sdk`
-	if [ $sdkversion ];then
-		sdk=${sdkversion#*=}
-	fi
+for prop in $(find "$OUT/rom" -name "build*.prop"); do
+    tmpsdk=$(grep "^ro.build.version.sdk=" "$prop" | head -n 1 | cut -d'=' -f2)
+    if [ -n "$tmpsdk" ] && [ "$tmpsdk" -gt "$sdk" ] 2>/dev/null; then
+        sdk=$tmpsdk
+    fi
 done
+
 echo found sdk version $sdk
 if [ $sdk -ge 26 ]; then
 	$MYDIR/tools/devdex.sh $OUT/rom $OUT/rom-deodexed
@@ -76,6 +77,8 @@ elif [ $sdk -ge 23 ];then
 	$MYDIR/tools/deoat.sh $OUT/rom $OUT/rom-deodexed
 elif [ $sdk -ge 21 ];then
 	$MYDIR/tools/deoat-oat2dex.sh $OUT/rom $OUT/rom-deodexed
-else
+elif [ $sdk -ge 1 ];then
 	$MYDIR/tools/deodex.sh $sdk $OUT/rom $OUT/rom-deodexed
+else
+	$MYDIR/tools/devdex.sh $OUT/rom $OUT/rom-deodexed
 fi
