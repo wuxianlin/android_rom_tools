@@ -11,6 +11,8 @@ git clone https://github.com/anestisb/vdexExtractor
 
 cd vdexExtractor
 git apply ../patches/vdexExtractor.diff
+wget -O vdex27.patch https://github.com/anestisb/vdexExtractor/commit/942429d92ef8bb5de243858c41a6f114ea4ebd23.patch
+git am vdex27.patch
 ./make.sh
 . tools/deodex/constants.sh
 
