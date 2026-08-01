@@ -10,6 +10,7 @@ GITHUB_TOKEN=$1
 git clone https://github.com/anestisb/vdexExtractor
 
 cd vdexExtractor
+git apply ../patches/vdexExtractor.diff
 ./make.sh
 . tools/deodex/constants.sh
 
