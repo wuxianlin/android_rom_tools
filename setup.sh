@@ -36,13 +36,11 @@ done
 cd ..
 
 #https://github.com/erofs/erofsmoke
-sudo apt-get install -y libfuse-dev libfuse3-dev uuid-dev
-git clone https://github.com/lz4/lz4 -b dev
-make BUILD_SHARED=no -C lz4 liblz4.a && lz4libdir=$(pwd)/lz4/lib
+sudo apt-get install -y libfuse-dev libfuse3-dev uuid-dev liblz4-dev liblzma-dev libzstd-dev libssl-dev
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git -b dev
 cd erofs-utils
 ./autogen.sh
-CFLAGS="-I${lz4libdir}" LDFLAGS="-L${lz4libdir}" PKG_CONFIG_PATH="${lz4libdir}:${PKG_CONFIG_PATH}" ./configure --enable-fuse
+./configure --enable-fuse --enable-lz4 --enable-lzma --with-zlib --with-libzstd --with-openssl
 make
 cd ..
 
